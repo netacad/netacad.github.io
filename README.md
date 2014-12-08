@@ -1,2 +1,0 @@
-netacad.github.io
-=================
