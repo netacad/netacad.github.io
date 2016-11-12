@@ -7,342 +7,395 @@
 	enable
 configure terminal
 banner motd "
-Router Site 1 or Building 1 or Police
+		Router Campus
 
-Site1-#>enable
-Site1-#>configure terminal
-Site1-#>hostname Site-1
-Site1-#>no ip domain-lookup
-Site1-#>enable secret class
-Site1-#>service password-encryption
-Site1-#>line console 0
-Site1-#>logging synchronous
-Site1-#>password cisco
-Site1-#>login
-Site1-#>line vty 0 15
-Site1-#>password cisco
-Site1-#>login
-Site1-#>exit
-Site1-#>banner motd #message-of-the-day#
-Site1-#>exit
+en
+conf t
+int g0/1
+no shut
+no shutdown
+exit
 
-Site1-#>configure terminal
-Site1-#>interface Serial0/0/0
-Site1-#>bandwidth 128
-Site1-#>ip address 192.168.10.105 255.255.255.252
-Site1-#>description Router Site 1 y HQ
-Site1-#>clock rate 128000
-Site1-#>no shutdown
-Site1-#>exit
+int g0/1.5
+encapsulation dot1Q 5
+ip address 10.10.5.1 255.255.255.0
+no shutdown
+exit
+int g0/1.10
+encapsulation dot1Q 10
+ip address 10.10.10.1 255.255.255.0
+no shut
+exit
+int g0/1.15
+encapsulation dot1Q 15
+ip addr 10.10.15.1 255.255.255.0
+no shut
+exit
+int g0/1.100
+encapsulation dot1Q 100
+ip addr 10.10.100.1 255.255.255.0
+no shut
+exit
+int g0/1.199
+encapsulation dot1Q 199
+ip addr 10.10.199.1 255.255.255.0
+no shut
+exit
+ip dhcp excluded-address 10.10.5.1 10.10.5.5
+ip dhcp pool vlan5pool
+network 10.10.5.0 255.255.255.0
+default-router 10.10.5.1
+dns-server 192.0.2.62
+exit
 
-Site1-#>configure terminal
-Site1-#>ip route 0.0.0.0 0.0.0.0 s0/0/0
-Site1-#>exit
+ip dhcp excluded-address 10.10.10.1 10.10.10.5
+ip dhcp pool vlan10pool
+network 10.10.10.0 255.255.255.0
+default-router 10.10.10.1
+dns-server 192.0.2.62
+exit
 
-Site1-#>configure terminal
-Site1-#>interface g0/0
-Site1-#>no shutdown
-Site1-#>exit
-Site1-#>interface g0/0.45
-Site1-#>encapsulation dot1Q 45
-Site1-#>ip address 192.168.45.1 255.255.255.0
-Site1-#>exit
-Site1-#>interface g0/0.47
-Site1-#>encapsulation dot1Q 47
-Site1-#>ip address 192.168.47.1 255.255.255.0
-Site1-#>exit
-Site1-#>interface g0/0.101
-Site1-#>encapsulation dot1Q 101
-Site1-#>ip address 192.168.101.1 255.255.255.0
-Site1-#>exit
+ip dhcp excluded-address 10.10.15.1 10.10.15.5
+ip dhcp pool vlan15pool
+network 10.10.15.0 255.255.255.0
+default-router 10.10.15.1
+dns-server 192.0.2.62
+exit
+ip access-list standard 1
+permit 10.10.100.0 0.0.0.255
+exit
+int g0/1.199
+ip access-group 1 out
 
-Site1-#>configure terminal
-Site1-#>router ospf 10
-Site1-#>router-id 1.1.1.1
-Site1-#>network 192.168.10.104 0.0.0.3 area 0
-Site1-#>network 192.168.45.0 0.0.0.255 area 0
-Site1-#>network 192.168.47.0 0.0.0.255 area 0
-Site1-#>network 192.168.101.0 0.0.0.255 area 0
-Site1-#>passive-interface g0/0.45
-Site1-#>passive-interface g0/0.47
-Site1-#>passive-interface g0/0.101
-Site1-#>exit
-Site1-#>interface s0/0/0
-Site1-#>bandwidth 128
-Site1-#>ip ospf cost 7500
-Site1-#>exit
+————————————————-
 
-Site1-#>ip dhcp excluded-address 192.168.45.1 192.168.45.20
-Site1-#>ip dhcp excluded-address 192.168.47.1 192.168.47.20
+SW-B
+en
+conf t
+hostname SW-B
+no ip domain-lookup
+banner motd “SW-B”
+enable secret cisco
+service password-encryption
 
-Site1-#>ip dhcp pool VLAN45
-Site1-#>network 192.168.45.0 255.255.255.0
-Site1-#>default-router 192.168.45.1
-Site1-#>dns-server 192.168.18.100
-Site1-#>exit
+line console 0
+password cisco
+login
+Logging synchronous
+exit
 
-Site1-#>ip dhcp pool VLAN47
-Site1-#>network 192.168.47.0 255.255.255.0
-Site1-#>default-router 192.168.47.1
-Site1-#>dns-server 192.168.18.100
-Site1-#>exit
+line vty 0 15
+password cisco
+login
+exit
 
+no logging console
 
-Router HQ or Main or Central
+vlan 5
+name sales
+exit
+vlan 10
+name prod
+exit
+vlan 15
+name acct
+exit
+vlan 100
+name admin
+exit
+vlan 199
+name manage
+exit
+vlan 999
+name null
+exit
+int f0/7
+switchport mode access
+switchport access vlan 5
+no shutdown
+exit
 
-HQ-#>enable
-HQ-#>configure terminal
-HQ-#>hostname HQ
-HQ-#>no ip domain-lookup
-HQ-#>enable secret class
-HQ-#>service password-encryption
-HQ-#>line console 0
-HQ-#>logging synchronous
-HQ-#>password cisco
-HQ-#>login
-HQ-#>line vty 0 15
-HQ-#>password cisco
-HQ-#>login
-HQ-#>exit
-HQ-#>banner motd #message-of-the-day#
+int f0/10
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
 
-HQ-#>configure terminal
-HQ-#>interface serial0/0/0
-HQ-#>bandwidth 128
-HQ-#>ip address 192.168.10.106 255.255.255.252
-HQ-#>no shutdown
-HQ-#>exit
+int f0/15
+switchport mode access
+switchport access vlan 15
+no shutdown
+exit
 
-HQ-#>interface serial0/0/1
-HQ-#>bandwidth 128
-HQ-#>ip address 192.168.10.114 255.255.255.252
-HQ-#>clock rate 128000
-HQ-#>no shutdown
-HQ-#>exit
+int f0/24
+switchport mode access
+switchport access vlan 100
+no shutdown
+exit
 
-HQ-#>interface g0/0
-HQ-#>ip address 192.168.18.41 255.255.255.248
-HQ-#>no shutdown
-HQ-#>exit
+int vlan 199
+ip address 10.10.199.253 255.255.255.0
+ip default-gateway 10.10.199.1
+int port-channel 2
+exit
+int range fa0/3-4
+channel-group 2 mode active
+exit
 
-HQ-#>interface serial0/1/0
-HQ-#>ip address 198.51.100.1 255.255.255.240
-HQ-#>no shutdown
-HQ-#>exit
+int port-channel 3
+exit
+int range fa0/5-6
+channel-group 3 mode active
+exit
 
-HQ-#>configure terminal
-HQ-#>ip route 0.0.0.0 0.0.0.0 s0/1/0
-HQ-#>ip route 192.168.200.0 255.255.252.0 s0/0/1
-HQ-#>exit
+int range fa0/3-6
+switchport mode trunk
+exit
 
-HQ-#>configure terminal
-HQ-#>router ospf 10
-HQ-#>router-id 2.2.2.2
-HQ-#>network 192.168.10.104 0.0.0.3 area 0
-HQ-#>network 192.168.10.112 0.0.0.3 area 0
-HQ-#>network 192.168.18.40 0.0.0.7 area 0
-HQ-#>passive-interface g0/0
-HQ-#>exit
-HQ-#>interface s0/0/0
-HQ-#>bandwidth 128
-HQ-#>ip ospf cost 7500
-HQ-#>exit
-HQ-#>interface s0/0/1
-HQ-#>bandwidth 128
-HQ-#>exit
+spanning-tree mode rapid-pvst
 
-HQ-#>ip nat inside source static 192.168.18.46 198.51.100.14
-HQ-#>interface g0/0
-HQ-#>ip nat inside
-HQ-#>exit
-HQ-#>interface s0/1/0
-HQ-#>ip nat outside
-HQ-#>exit
+int range fa0/1-2
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
 
-HQ-#>ip nat pool INTERNET 198.51.100.3 198.51.100.13 netmask 255.255.255.240
-HQ-#>ip nat inside source list 1 pool INTERNET
-HQ-#>ip nat inside source static 192.168.18.46 198.51.100.14
-HQ-#>ip access-list standard 1
-HQ-#>permit 192.168.45.0 0.0.0.255
-HQ-#>permit 192.168.47.0 0.0.0.255
-HQ-#>permit 192.168.200.0 0.0.3.255
-HQ-#>exit
-HQ-#>interface Serial0/1/0
-HQ-#>ip access-group 101 in
-HQ-#>exit
+int range fa0/8-9
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
 
-HQ-#>access-list 1 permit 192.168.45.0 0.0.0.255
-HQ-#>access-list 1 permit 192.168.47.0 0.0.0.255
-HQ-#>access-list 1 permit 192.168.200.0 0.0.3.255
-HQ-#>ip access-list standard MANAGE
-HQ-#>permit host 203.0.113.18
-HQ-#>exit
-HQ-#>access-list 101 permit ip host 203.0.113.18 any
-HQ-#>access-list 101 permit tcp any host 198.51.100.14 eq www
-HQ-#>access-list 101 permit tcp any any established
-HQ-#>access-list 101 deny ip any any
-HQ-#>line vty 0 15
-HQ-#>access-class MANAGE in
-HQ-#>password cisco
-HQ-#>login
-HQ-#>exiten
+int range fa0/11-14
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
 
-Router Site 2 or Building 2 or Fire
+int range fa0/16-23
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
 
-Site2-#>enable
-Site2-#>configure terminal
-Site2-#>hostname Site-2
-Site2-#>no ip domain-lookup
-Site2-#>enable secret class
-Site2-#>service password-encryption
-Site2-#>line console 0
-Site2-#>logging synchronous
-Site2-#>password cisco
-Site2-#>login
-Site2-#>line vty 0 15
-Site2-#>password cisco
-Site2-#>login
-Site2-#>exit
-Site2-#>banner motd #message-of-the-day#
+Int range g1/1-2
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
+int fa0/7
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+exit
 
-Site2-#>configure terminal
-Site2-#>interface Serial0/0/1
-Site2-#>bandwidth 128
-Site2-#>ip address 192.168.10.113 255.255.255.252
-Site2-#>description Router Site 2 y HQ
-Site2-#>no shutdown
-Site2-#>exit
+int fa0/10
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+exit
 
-Site2-#>configure terminal
-Site2-#>ip route 0.0.0.0 0.0.0.0 s0/0/1
-Site2-#>ip route 192.168.200.0 255.255.252.0 s0/0/0
-Site2-#>exit
+int fa0/15
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+exit
 
-Site2-#>configure terminal
-Site2-#>router ospf 10
-Site2-#>router-id 3.3.3.3
-Site2-#>network 192.168.10.112 0.0.0.3 area 0
-Site2-#>interface s0/0/1
-Site2-#>bandwidth 128
-Site2-#>exit
+int fa0/24
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+exit
 
-Site2-#>interface s0/0/0
-Site2-#>no shutdown
-Site2-#>exit
+ip domain-name ccnaPTSA.com
+crypto key generate rsa
+1024
+ip ssh version 2
 
+line vty 0 4
+login local
+transport input ssh
+exit
 
+username netadmin secret SSH_secret9
 
-SW1-#>enable
-SW1-#>configure terminal
-SW1-#>hostname Site1-SW1
-SW1-#>no ip domain-lookup
-SW1-#>enable secret class
-SW1-#>service password-encryption
-SW1-#>line console 0
-SW1-#>logging synchronous
-SW1-#>password cisco
-SW1-#>login
-SW1-#>line vty 0 15
-SW1-#>password cisco
-SW1-#>login
-SW1-#>exit
-SW1-#>banner motd #message-of-the-day#
-SW1-#>exit
+—————————————————-
+SW-A>
+en
+conf t
 
-SW1-#>configure terminal
-SW1-#>vlan 45
-SW1-#>name finance
-SW1-#>vlan 47
-SW1-#>name sales
-SW1-#>vlan 101
-SW1-#>name netadmin
-SW1-#>exit
+vlan 5
+name sales
+exit
+vlan 10
+name prod
+exit
+vlan 15
+name acct
+exit
+vlan 100
+name admin
+exit
+vlan 199
+name manage
+exit
+vlan 999
+name null
+exit
+int f0/5
+switchport mode access
+switchport access vlan 5
+no shutdown
+exit
 
-SW1-#>configure terminal
-SW1-#>interface gi1/1
-SW1-#>switchport mode trunk
-SW1-#>no shutdown
-SW1-#>exit
-SW1-#>interface gi1/2
-SW1-#>switchport mode trunk
-SW1-#>no shutdown
-SW1-#>exit
+int f0/10
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+int f0/15
+switchport mode access
+switchport access vlan 15
+no shutdown
+exit
 
-SW1-#>interface fa0/10
-SW1-#>switchport mode access
-SW1-#>switchport access vlan 45
-SW1-#>no shutdown
-SW1-#>exit
-SW1-#>interface fa0/15
-SW1-#>switchport mode access
-SW1-#>switchport access vlan 47
-SW1-#>no shutdown
-SW1-#>exit
+int f0/24
+switchport mode access
+switchport access vlan 100
+no shutdown
+exit
 
-SW1-#>ip default-gateway 192.168.101.1
-SW1-#>interface vlan 101
-SW1-#>ip address 192.168.101.2 255.255.255.0
-SW1-#>exit
+int vlan 199
+ip address 10.10.199.254 255.255.255.0
+ip default-gateway 10.10.199.1
+int port-channel 1
+exit
+int port-channel 2
+exit
 
-SW1-#>int range fa0/1-9, fa0/11-14, fa0/16-24
-SW1-#>switchport mode access 
-SW1-#>shutdown
-SW1-#>exit
+int range fa0/1-2
+channel-group 1 mode active
+exit
 
+int range fa0/3-4
+channel-group 2 mode active
+exit
 
- 
-SW2-#>enable
-SW2-#>configure terminal
-SW2-#>hostname Site1-SW2
-SW2-#>no ip domain-lookup
-SW2-#>enable secret class
-SW2-#>service password-encryption
-SW2-#>line console 0
-SW2-#>logging synchronous
-SW2-#>password cisco
-SW2-#>login
-SW2-#>line vty 0 15
-SW2-#>password cisco
-SW2-#>login
-SW2-#>exit
-SW2-#>banner motd #message-of-the-day#
-SW2-#>exit
+int range fa0/1-4
+switchport mode trunk
+exit
 
-SW2-#>configure terminal
-SW2-#>vlan 45
-SW2-#>name finance
-SW2-#>exit
-SW2-#>vlan 47
-SW2-#>name sales
-SW2-#>exit
-SW2-#>vlan 101
-SW2-#>name netadmin
-SW2-#>exit
+int gig1/1
+no shutdown
+switchport mode trunk
+exit
 
-SW2-#>interface gi1/1
-SW2-#>switchport mode trunk
-SW2-#>no shutdown
-SW2-#>exit
-SW2-#>interface fa0/3
-SW2-#>switchport mode access
-SW2-#>switchport access vlan 45
-SW2-#>no shutdown
-SW2-#>exit
-SW2-#>interface fa0/21
-SW2-#>switchport mode access
-SW2-#>switchport access vlan 47
-SW2-#>no shutdown
-SW2-#>exit
+spanning-tree mode rapid-pvst
+spanning-tree vlan 5 root primary
+spanning-tree vlan 10 root primary
+spanning-tree vlan 15 root secondary
+spanning-tree vlan 100 root secondary
 
-SW2-#>ip default-gateway 192.168.101.1
-SW2-#>interface vlan 101
-SW2-#>ip address 192.168.101.3 255.255.255.0
-SW2-#>exit
+————————————————–
+SW-C
 
-SW2-#>int range fa0/1-2, fa0/4-20, fa0/22-24
-SW2-#>switchport mode access 
-SW2-#>shutdown
-SW2-#>exit
+en
+conf t
+
+vlan 5
+name sales
+exit
+vlan 10
+name prod
+exit
+vlan 15
+name acct
+exit
+vlan 100
+name admin
+exit
+vlan 199
+name manage
+exit
+vlan 999
+name null
+exit
+int f0/7
+switchport mode access
+switchport access vlan 5
+no shutdown
+exit
+
+int f0/10
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+int f0/15
+switchport mode access
+switchport access vlan 15
+no shutdown
+exit
+
+int f0/24
+switchport mode access
+switchport access vlan 100
+no shutdown
+exit
+
+int vlan 199
+ip address 10.10.199.252 255.255.255.0
+ip default-gateway 10.10.199.1
+int port-channel 1
+exit
+int port-channel 3
+exit
+
+int range fa0/1-2
+channel-group 1 mode active
+exit
+
+int range fa0/5-6
+channel-group 3 mode passive
+exit
+
+int range fa0/1-2
+switchport mode trunk
+exit
+
+int range fa0/5-6
+switchport mode trunk
+exit
+
+spanning-tree mode rapid-pvst
+spanning-tree vlan 15 root primary
+spanning-tree vlan 100 root primary
+spanning-tree vlan 5 root secondary
+spanning-tree vlan 10 root secondary
+
+int fa0/7
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+
+int fa0/10
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+
+int fa0/15
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+
+int fa0/24
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
 "
 exit
 exit	
