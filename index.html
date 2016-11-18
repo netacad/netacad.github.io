@@ -112,6 +112,10 @@ hq>line vty 0 15
 hq>access-class TELNET-BLOCK in
 hq>interface serial 0/1/0
 hq>ip access-group 101 in
+hq>access-list 101 permit icmp host 198.51.100.5 any echo
+hq>access-list 101 deny icmp any any echo
+hq>access-list 101 permit ip any any
+hq>copy running-config startup-config
 hq>exit
 site2>hostname West
 site2>no ip domain-lookup
