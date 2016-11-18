@@ -3,452 +3,379 @@
 	
 </head>
 <body>
-<img src = "cisco2.png"  align="middle">
+
+<img src = "cisco2.png"  align="center">
  <p>
  </p>
 <textarea  type="text" accesskey="z" autofocus name="comment" cols="1" rows="1" readonly>
 enable
 configure terminal
 banner motd "
-#####–SITE 1
 
-hostname East
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line aux 0
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only!@
-
-interface serial 0/0/0
-bandwidth 128
-clock rate 12800
-ip address 192.168.100.22 255.255.255.252
-description 2-Central
-ip ospf cost 7500
-ip ospf message-digest-key 1 md5 xyz_OSPF
-ip ospf authentication message-digest
-no shutdown
+site1>hostname East
+site1>no ip domain-lookup
+site1>enable secret cisco
+site1>line console 0
+site1>logging synchronous
+site1>password cisco
+site1>login
+site1>line aux 0
+site1>password cisco
+site1>login
+site1>line vty 0 15
+site1>password cisco
+site1>login
+site1>service password-encryption
+site1>banner motd @Authorized acces only!@
+site1>interface serial 0/0/0
+site1>bandwidth 128
+site1>clock rate 12800
+site1>ip address 192.168.100.22 255.255.255.252
+site1>description 2-Central
+site1>ip ospf cost 7500
+site1>ip ospf message-digest-key 1 md5 xyz_OSPF
+site1>ip ospf authentication message-digest
+site1>no shutdown
+site1>exit
+site1>interface gi 0/0
+site1>ip address 192.168.8.1 255.255.255.0
+site1>description Manage-1A
+site1>no shutdown
+site1>interface gi 0/1
+site1>ip address 192.168.9.1 255.255.255.0
+site1>description Clerk-1C
+site1>no shutdown
+site1>exit
+site1>router ospf 1
+site1>router-id 1.1.1.1
+site1>area 0 authentication message-digest
+site1>network 192.168.100.20 0.0.0.3 area 0
+site1>network 192.168.8.0 0.0.0.255 area 1
+site1>network 192.168.9.0 0.0.0.255 area 1
+site1>passive-interface GigabitEthernet0/0
+site1>passive-interface GigabitEthernet0/1
+site1>no auto-summary
+site1>exit
+hq>hostname Central
+hq>no ip domain-lookup
+hq>enable secret cisco
+hq>line console 0
+hq>logging synchronous
+hq>password cisco
+hq>login
+hq>line aux 0
+hq>password cisco
+hq>login
+hq>line vty 0 15
+hq>password cisco
+hq>login
+hq>service password-encryption
+hq>banner motd @Authorized acces only @
+hq>ip route 0.0.0.0 0.0.0.0 s0/1/0
+hq>interface serial 0/0/0
+hq>bandwidth 128
+hq>ip address 192.168.100.21 255.255.255.252
+hq>description 2-East
+hq>ip ospf cost 7500
+hq>ip ospf message-digest-key 1 md5 xyz_OSPF
+hq>ip ospf authentication message-digest
+hq>no shutdown
+hq>exit
+hq>interface serial 0/0/1
+hq>bandwidth 128
+hq>ip address 192.168.100.37 255.255.255.252
+hq>description 2-West
+hq>clock rate 128000
+hq>ip ospf message-digest-key 1 md5 xyz_OSPF
+hq>ip ospf authentication message-digest
+hq>no shutdown
+hq>exit
+hq>interface serial 0/1/0
+hq>bandwidth 128
+hq>ip address 203.0.113.18 255.255.255.248
+hq>description 2-INTERNET
+hq>no shutdown
+hq>exit
+hq>router ospf 1
+hq>router-id 2.2.2.2
+hq>area 0 authentication message-digest
+hq>default-information originate
+hq>network 192.168.100.20 0.0.0.3 area 0
+hq>network 192.168.100.36 0.0.0.3 area 0
+hq>passive-interface Serial0/1/0
+hq>no auto-summary
+hq>exit
+hq>ip access-list standard TELNET-BLOCK
+hq>permit host 198.51.100.5
+hq>line vty 0 15
+hq>access-class TELNET-BLOCK in
+hq>interface serial 0/1/0
+hq>ip access-group 101 in
+hq>exit
+site2>hostname West
+site2>no ip domain-lookup
+site2>enable secret cisco
+site2>line console 0
+site2>logging synchronous
+site2>password cisco
+site2>login
+site2>line vty 0 15
+site2>password cisco
+site2>login
+site2>service password-encryption
+site2>banner motd @Authorized acces only.@
+site2>interface serial 0/0/1
+site2>bandwidth 128
+site2>ip address 192.168.100.38 255.255.255.252
+site2>description 2-Central
+site2>ip ospf message-digest-key 1 md5 xyz_OSPF
+site2>ip ospf authentication message-digest
+site2>no shutdown
+site2>interface gi 0/1
+site2>no shutdown
+site2>interface gi 0/1.2
+site2>encapsulation dot1q 2
+site2>ip address 10.10.2.1 255.255.255.0
+site2>interface gi 0/1.4
+site2>encapsulation dot1q 4
+site2>ip address 10.10.4.1 255.255.255.0
+site2>interface gi 0/1.8
+site2>encapsulation dot1q 8
+site2>ip address 10.10.8.1 255.255.255.0
+site2>interface gi 0/1.15
+site2>encapsulation dot1q 15
+site2>ip address 10.10.15.1 255.255.255.0
+site2>interface gi 0/1.25
+site2>encapsulation dot1q 25
+site2>ip address 10.10.25.1 255.255.255.0
+site2>exit
+site2>router ospf 1
+site2>router-id 3.3.3.3
+site2>passive-interface GigabitEthernet0/1
+site2>network 192.168.100.36 0.0.0.3 area 0
+site2>network 10.10.2.0 0.0.0.255 area 2
+site2>network 10.10.4.0 0.0.0.255 area 2
+site2>network 10.10.8.0 0.0.0.255 area 2
+site2>network 10.10.15.0 0.0.0.255 area 2
+site2>no auto-summary
+site2>passive-interface g0/1.2
+site2>passive-interface g0/1.4
+site2>passive-interface g0/1.8
+site2>passive-interface g0/1.15
+site2>exit
+site2>interface serial 0/0/1
+site2>ip summary-address eigrp 100 10.10.0.0 255.255.240.0
+site2>ip dhcp excluded-address 10.10.2.1 10.10.2.5
+site2>ip dhcp excluded-address 10.10.4.1 10.10.4.5
+site2>ip dhcp excluded-address 10.10.8.1 10.10.8.5
+site2>ip dhcp pool vlan2pool
+site2>network 10.10.2.0 255.255.255.0
+site2>default-router 10.10.2.1
+site2>dns-server 192.168.200.225
+site2>ip dhcp pool vlan4pool
+site2>network 10.10.4.0 255.255.255.0
+site2>default-router 10.10.4.1
+site2>dns-server 192.168.200.225
+site2>ip dhcp pool vlan8pool
+site2>network 10.10.8.0 255.255.255.0
+site2>default-router 10.10.8.1
+site2>dns-server 192.168.200.225
+site2>exit
+site2>access-list 1 permit 10.10.15.0 0.0.0.255
+site2>interface gi0/1.25
+site2>ip access-group 1 out
+swa>hostname Bldg1
+swa>no ip domain-lookup
+swa>enable secret cisco
+swa>line console 0
+swa>logging synchronous
+swa>password cisco
+swa>login
+swa>line vty 0 15
+swa>password cisco
+swa>login
+swa>service password-encryption
+swa>banner motd @Authorized acces only!@
+swa>ip default-gateway 10.10.25.1
+swa>vlan 2
+swa>name sales
+swa>vlan 4
+swa>name prod
+swa>vlan 8
+swa>name acct
+swa>vlan 15
+swa>name admin
+swa>vlan 25
+swa>name SVI-NET
+swa>vlan 99
+swa>name null
+swa>interface vlan 25
+swa>ip address 10.10.25.254 255.255.255.0
+swa>no shutdown
+swa>interface fa0/5
+swa>switchport mode acces
+swa>switchport acces vlan 2
+swa>interface fa0/10
+swa>switchport mode acces
+swa>switchport acces vlan 4
+swa>interface fa0/15
+swa>switchport mode acces
+swa>switchport acces vlan 8
+swa>interface fa0/24
+swa>switchport mode acces
+swa>switchport acces vlan 15
+swa>interface range fa0/6-9,fa0/11-14,fa0/16-23
+swa>switchport mode acces
+swa>switchport acces vlan 99
+swa>shutdown
+swa>interface range gi1/1-2
+swa>switchport mode acces
+swa>switchport acces vlan 99
+swa>shutdown
+swa>interface range fa0/1-2
+swa>channel-group 1 mode active
+swa>interface port-channel 1
+swa>switchport mode trunk
+swa>interface range fa0/3-4
+swa>channel-group 2 mode active
+swa>interface port-channel 2
+swa>switchport mode trunk
+swa>exit
+swa>spanning-tree mode rapid-pvst
+swa>spanning-tree vlan 2 root primary
+swa>spanning-tree vlan 4 root primary
+swa>spanning-tree vlan 8 root secondary
+swa>spanning-tree vlan 15 root secondary
+swa>interface fa0/5
+swa>switchport port-security
+swa>switchport port-security violation restrict
+swa>switchport port-security maximum 2
+swa>switchport port-security mac-address sticky
+swa>interface fa0/10
+swa>switchport port-security
+swa>switchport port-security violation restrict
+swa>switchport port-security maximum 2
+swa>switchport port-security mac-address sticky
+swa>interface fa0/15
+swa>switchport port-security
+swa>switchport port-security violation restrict
+swa>switchport port-security maximum 2
+swa>switchport port-security mac-address sticky
+swa>interface fa0/24
+swa>switchport port-security
+swa>switchport port-security violation restrict
+swa>switchport port-security maximum 2
+swa>switchport port-security mac-address sticky
+swb>hostname Bldg2
+swb>no ip domain-lookup
+swb>enable secret cisco
+swb>line console 0
+swb>logging synchronous
+swb>password cisco
+swb>login
+swb>line vty 0 15
+swb>password cisco
+swb>login
+swb>service password-encryption
+swb>banner motd @Authorized acces only!@
+swb>ip ssh version 2
+swb>ip domain-name ccnaPTSA.com
+swb>crypto key generate rsa
+swb>username netadmin password SSH_secret9
+swb>line vty 0 4
+swb>login local
+swb>transport input ssh
+swb>line vty 5 15
+swb>login local
+swb>transport input ssh
+swb>ip default-gateway 10.10.25.1
+swb>vlan 2
+swb>name sales
+swb>vlan 4
+swb>name prod
+swb>vlan 8
+swb>name acct
+swb>vlan 15
+swb>name admin
+swb>vlan 25
+swb>name SVI-NET
+swb>vlan 99
+swb>name null
+swb>interface vlan 25
+swb>ip address 10.10.25.253 255.255.255.0
+swb>no shutdown
+swb>interface gi 1/1
+swb>switchport mode trunk
+swb>interface range fa0/3-4
+swb>channel-group 2 mode active
+swb>interface port-channel 2
+swb>switchport mode trunk
+swb>interface range fa0/5-6
+swb>channel-group 3 mode active
+swb>interface port-channel 3
+swb>switchport mode trunk
+swb>spanning-tree mode rapid-pvst
+swc>hostname Bldg3
+swc>no ip domain-lookup
+swc>enable secret cisco
+swc>line console 0
+swc>logging synchronous
+swc>password cisco
+swc>login
+swc>line vty 0 15
+swc>password cisco
+swc>login
+swc>service password-encryption
+swc>banner motd @Authorized acces only !@
+swc>ip default-gateway 10.10.25.1
+swc>vlan 2
+swc>name sales
+swc>vlan 4
+swc>name prod
+swc>vlan 8
+swc>name acct
+swc>vlan 15
+swc>name admin
+swc>vlan 25
+swc>name SVI-NET
+swc>vlan 99
+swc>name null
+swc>interface vlan 25
+swc>ip address 10.10.25.252 255.255.255.0
+swc>no shutdown
+swc>interface fa0/7
+swc>switchport mode acces
+swc>switchport acces vlan 2
+swc>interface fa0/10
+swc>switchport mode acces
+swc>switchport acces vlan 4
+swc>interface fa0/15
+swc>switchport mode acces
+swc>switchport acces vlan 8
+swc>interface fa0/24
+swc>switchport mode acces
+swc>switchport acces vlan 15
+swc>interface range fa0/1-2
+swc>channel-group 1 mode active
+swc>no shutdown
+swc>interface port-channel 1
+swc>switchport mode trunk
+swc>interface range fa0/5-6
+swc>channel-group 3 mode passive
+swc>no shutdown
+swc>interface port-channel 3
+swc>switchport mode trunk
+swc>spanning-tree mode rapid-pvst
+swc>spanning-tree vlan 2 root secondary
+swc>spanning-tree vlan 4 root secondary
+swc>spanning-tree vlan 8 root primary
+swc>spanning-tree vlan 15 root primary
+swc>interface range fa0/7, fa0/10, fa0/15, fa0/24
+swc>spanning-tree portfast
+swc>spanning-tree bpduguard enable
+swc>no shutdown"
 exit
-
-interface gi 0/0
-ip address 192.168.8.1 255.255.255.0
-description Manage-1A
-no shutdown
-interface gi 0/1
-ip address 192.168.9.1 255.255.255.0
-description Clerk-1C
-no shutdown
 exit
-
-— OSPF
-router ospf 1
-router-id 1.1.1.1
-area 0 authentication message-digest
-network 192.168.100.20 0.0.0.3 area 0
-network 192.168.8.0 0.0.0.255 area 1
-network 192.168.9.0 0.0.0.255 area 1
-passive-interface GigabitEthernet0/0
-passive-interface GigabitEthernet0/1
-no auto-summary
-exit
-
-####################
-########–HQ
-
-hostname Central
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line aux 0
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only @
-
-ip route 0.0.0.0 0.0.0.0 s0/1/0
-interface serial 0/0/0
-bandwidth 128
-ip address 192.168.100.21 255.255.255.252
-description 2-East
-ip ospf cost 7500
-ip ospf message-digest-key 1 md5 xyz_OSPF
-ip ospf authentication message-digest
-no shutdown
-exit
-
-interface serial 0/0/1
-bandwidth 128
-ip address 192.168.100.37 255.255.255.252
-description 2-West
-clock rate 128000
-ip ospf message-digest-key 1 md5 xyz_OSPF
-ip ospf authentication message-digest
-no shutdown
-exit
-
-interface serial 0/1/0
-bandwidth 128
-ip address 203.0.113.18 255.255.255.248
-description 2-INTERNET
-no shutdown
-exit
-
-— OSPF
-router ospf 1
-router-id 2.2.2.2
-area 0 authentication message-digest
-default-information originate
-network 192.168.100.20 0.0.0.3 area 0
-network 192.168.100.36 0.0.0.3 area 0
-passive-interface Serial0/1/0
-no auto-summary
-exit
-
-–ACCESS LIST
-ip access-list standard TELNET-BLOCK
-permit host 198.51.100.5
-line vty 0 15
-access-class TELNET-BLOCK in
-
-interface serial 0/1/0
-ip access-group 101 in
-exit
-
-#######################
-###### –SITE 2
-
-hostname West
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only.@
-
-interface serial 0/0/1
-bandwidth 128
-ip address 192.168.100.38 255.255.255.252
-description 2-Central
-ip ospf message-digest-key 1 md5 xyz_OSPF
-ip ospf authentication message-digest
-no shutdown
-
-interface gi 0/1
-no shutdown
-
-interface gi 0/1.2
-encapsulation dot1q 2
-ip address 10.10.2.1 255.255.255.0
-interface gi 0/1.4
-encapsulation dot1q 4
-ip address 10.10.4.1 255.255.255.0
-interface gi 0/1.8
-encapsulation dot1q 8
-ip address 10.10.8.1 255.255.255.0
-interface gi 0/1.15
-encapsulation dot1q 15
-ip address 10.10.15.1 255.255.255.0
-interface gi 0/1.25
-encapsulation dot1q 25
-ip address 10.10.25.1 255.255.255.0
-exit
-
-— OSPF
-router ospf 1
-router-id 3.3.3.3
-passive-interface GigabitEthernet0/1
-network 192.168.100.36 0.0.0.3 area 0
-network 10.10.2.0 0.0.0.255 area 2
-network 10.10.4.0 0.0.0.255 area 2
-network 10.10.8.0 0.0.0.255 area 2
-network 10.10.15.0 0.0.0.255 area 2
-no auto-summary
-passive-interface g0/1.2
-passive-interface g0/1.4
-passive-interface g0/1.8
-passive-interface g0/1.15
-exit
-
-– ROUTE SUMMARIZATION
-interface serial 0/0/1
-ip summary-address eigrp 100 10.10.0.0 255.255.240.0
-
-– DHCP
-ip dhcp excluded-address 10.10.2.1 10.10.2.5
-ip dhcp excluded-address 10.10.4.1 10.10.4.5
-ip dhcp excluded-address 10.10.8.1 10.10.8.5
-ip dhcp pool vlan2pool
-network 10.10.2.0 255.255.255.0
-default-router 10.10.2.1
-dns-server 192.168.200.225
-ip dhcp pool vlan4pool
-network 10.10.4.0 255.255.255.0
-default-router 10.10.4.1
-dns-server 192.168.200.225
-ip dhcp pool vlan8pool
-network 10.10.8.0 255.255.255.0
-default-router 10.10.8.1
-dns-server 192.168.200.225
-exit
-
-–ACCESS LIST
-access-list 1 permit 10.10.15.0 0.0.0.255
-interface gi0/1.25
-ip access-group 1 out
-
-#######–SW-A
-
-hostname Bldg1
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only!@
-
-ip default-gateway 10.10.25.1
-vlan 2
-name sales
-vlan 4
-name prod
-vlan 8
-name acct
-vlan 15
-name admin
-vlan 25
-name SVI-NET
-vlan 99
-name null
-interface vlan 25
-ip address 10.10.25.254 255.255.255.0
-no shutdown
-
-interface fa0/5
-switchport mode acces
-switchport acces vlan 2
-
-interface fa0/10
-switchport mode acces
-switchport acces vlan 4
-
-interface fa0/15
-switchport mode acces
-switchport acces vlan 8
-
-interface fa0/24
-switchport mode acces
-switchport acces vlan 15
-
-interface range fa0/6-9,fa0/11-14,fa0/16-23
-switchport mode acces
-switchport acces vlan 99
-shutdown
-
-interface range gi1/1-2
-switchport mode acces
-switchport acces vlan 99
-shutdown
-
-– ETHERCHANNEL
-interface range fa0/1-2
-channel-group 1 mode active
-interface port-channel 1
-switchport mode trunk
-interface range fa0/3-4
-channel-group 2 mode active
-interface port-channel 2
-switchport mode trunk
-exit
-
-–PVST+
-spanning-tree mode rapid-pvst
-spanning-tree vlan 2 root primary
-spanning-tree vlan 4 root primary
-spanning-tree vlan 8 root secondary
-spanning-tree vlan 15 root secondary
-
-–SECURITY
-interface fa0/5
-switchport port-security
-switchport port-security violation restrict
-switchport port-security maximum 2
-switchport port-security mac-address sticky
-
-interface fa0/10
-switchport port-security
-switchport port-security violation restrict
-switchport port-security maximum 2
-switchport port-security mac-address sticky
-
-interface fa0/15
-switchport port-security
-switchport port-security violation restrict
-switchport port-security maximum 2
-switchport port-security mac-address sticky
-
-interface fa0/24
-switchport port-security
-switchport port-security violation restrict
-switchport port-security maximum 2
-switchport port-security mac-address sticky
-
-#######–SW-B
-
-hostname Bldg2
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only!@
-
-– SSH
-ip ssh version 2
-ip domain-name ccnaPTSA.com
-crypto key generate rsa
-username netadmin password SSH_secret9
-line vty 0 4
-login local
-transport input ssh
-line vty 5 15
-login local
-transport input ssh
-
-ip default-gateway 10.10.25.1
-vlan 2
-name sales
-vlan 4
-name prod
-vlan 8
-name acct
-vlan 15
-name admin
-vlan 25
-name SVI-NET
-vlan 99
-name null
-interface vlan 25
-ip address 10.10.25.253 255.255.255.0
-no shutdown
-interface gi 1/1
-switchport mode trunk
-
-– ETHERCHANNEL
-interface range fa0/3-4
-channel-group 2 mode active
-interface port-channel 2
-switchport mode trunk
-interface range fa0/5-6
-channel-group 3 mode active
-interface port-channel 3
-switchport mode trunk
-
-–PVST+
-spanning-tree mode rapid-pvst
-
-#########– SW-C
-
-hostname Bldg3
-no ip domain-lookup
-enable secret cisco
-line console 0
-logging synchronous
-password cisco
-login
-line vty 0 15
-password cisco
-login
-service password-encryption
-banner motd @Authorized acces only !@
-
-ip default-gateway 10.10.25.1
-vlan 2
-name sales
-vlan 4
-name prod
-vlan 8
-name acct
-vlan 15
-name admin
-vlan 25
-name SVI-NET
-vlan 99
-name null
-interface vlan 25
-ip address 10.10.25.252 255.255.255.0
-no shutdown
-
-interface fa0/7
-switchport mode acces
-switchport acces vlan 2
-
-interface fa0/10
-switchport mode acces
-switchport acces vlan 4
-
-interface fa0/15
-switchport mode acces
-switchport acces vlan 8
-
-interface fa0/24
-switchport mode acces
-switchport acces vlan 15
-
-– ETHERCHANNEL
-interface range fa0/1-2
-channel-group 1 mode active
-no shutdown
-interface port-channel 1
-switchport mode trunk
-
-interface range fa0/5-6
-channel-group 3 mode passive
-no shutdown
-interface port-channel 3
-switchport mode trunk
-
-–PVST+
-spanning-tree mode rapid-pvst
-spanning-tree vlan 2 root secondary
-spanning-tree vlan 4 root secondary
-spanning-tree vlan 8 root primary
-spanning-tree vlan 15 root primary
-
-–Port Fast BPDU Guard
-interface range fa0/7, fa0/10, fa0/15, fa0/24
-spanning-tree portfast
-spanning-tree bpduguard enable
-no shutdown"
 </textarea>
 </form>
 </body>
