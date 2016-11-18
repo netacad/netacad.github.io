@@ -10,256 +10,445 @@
 enable
 configure terminal
 banner motd "
-Router Campus
-en conf t
-int g0/1 no shut
-no shutdown exit
-int g0/1.5
-encapsulation dot1Q 5
-ip address 10.10.5.1 255.255.255.0
-no shutdown exit
-int g0/1.10
-encapsulation dot1Q 10
-ip address 10.10.10.1 255.255.255.0
-no shut exit
-int g0/1.15
-encapsulation dot1Q 15
-ip addr 10.10.15.1 255.255.255.0
-no shut exit
-int g0/1.100
-encapsulation dot1Q 100
-ip addr 10.10.100.1 255.255.255.0
-no shut exit
-int g0/1.199
-encapsulation dot1Q 199
-ip addr 10.10.199.1 255.255.255.0
-no shut exit
-ip dhcp excluded-address 10.10.5.1 10.10.5.5
-ip dhcp pool vlan5pool
-network 10.10.5.0 255.255.255.0
-default-router 10.10.5.1
-dns-server 192.0.2.62 exit
-ip dhcp excluded-address 10.10.10.1 10.10.10.5
-ip dhcp pool vlan10pool
-network 10.10.10.0 255.255.255.0
-default-router 10.10.10.1
-dns-server 192.0.2.62 exit
-ip dhcp excluded-address 10.10.15.1 10.10.15.5
-ip dhcp pool vlan15pool
-network 10.10.15.0 255.255.255.0
-default-router 10.10.15.1
-dns-server 192.0.2.62 exit
-ip access-list standard 1
-permit 10.10.100.0 0.0.0.255 exit
-int g0/1.199
-ip access-group 1 out
-————————————————-
+#####–SITE 1
 
-SW-B
-en conf t hostname SW-B
+hostname East
 no ip domain-lookup
-banner motd “SW-B”
 enable secret cisco
-service password-encryption
 line console 0
+logging synchronous
 password cisco
 login
-Logging synchronous exit
+line aux 0
+password cisco
+login
 line vty 0 15
 password cisco
-login exit
-no logging console
-vlan 5 name sales exit 
-vlan 10 name prod exit
-vlan 15 name acct exit
-vlan 100 name admin exit
-vlan 199 name manage exit
-vlan 999 name null exit
-int f0/7
-switchport mode access
-switchport access vlan 5
-no shutdown exit
-int f0/10
-switchport mode access
-switchport access vlan 10
-no shutdown exit
-int f0/15
-switchport mode access
-switchport access vlan 15
-no shutdown exit
-int f0/24
-switchport mode access
-switchport access vlan 100
-no shutdown exit
-int vlan 199
-ip address 10.10.199.253 255.255.255.0
-ip default-gateway 10.10.199.1
-int port-channel 2 exit
-int range fa0/3-4
+login
+service password-encryption
+banner motd @Authorized acces only!@
+
+interface serial 0/0/0
+bandwidth 128
+clock rate 12800
+ip address 192.168.100.22 255.255.255.252
+description 2-Central
+ip ospf cost 7500
+ip ospf message-digest-key 1 md5 xyz_OSPF
+ip ospf authentication message-digest
+no shutdown
+exit
+
+interface gi 0/0
+ip address 192.168.8.1 255.255.255.0
+description Manage-1A
+no shutdown
+interface gi 0/1
+ip address 192.168.9.1 255.255.255.0
+description Clerk-1C
+no shutdown
+exit
+
+— OSPF
+router ospf 1
+router-id 1.1.1.1
+area 0 authentication message-digest
+network 192.168.100.20 0.0.0.3 area 0
+network 192.168.8.0 0.0.0.255 area 1
+network 192.168.9.0 0.0.0.255 area 1
+passive-interface GigabitEthernet0/0
+passive-interface GigabitEthernet0/1
+no auto-summary
+exit
+
+####################
+########–HQ
+
+hostname Central
+no ip domain-lookup
+enable secret cisco
+line console 0
+logging synchronous
+password cisco
+login
+line aux 0
+password cisco
+login
+line vty 0 15
+password cisco
+login
+service password-encryption
+banner motd @Authorized acces only @
+
+ip route 0.0.0.0 0.0.0.0 s0/1/0
+interface serial 0/0/0
+bandwidth 128
+ip address 192.168.100.21 255.255.255.252
+description 2-East
+ip ospf cost 7500
+ip ospf message-digest-key 1 md5 xyz_OSPF
+ip ospf authentication message-digest
+no shutdown
+exit
+
+interface serial 0/0/1
+bandwidth 128
+ip address 192.168.100.37 255.255.255.252
+description 2-West
+clock rate 128000
+ip ospf message-digest-key 1 md5 xyz_OSPF
+ip ospf authentication message-digest
+no shutdown
+exit
+
+interface serial 0/1/0
+bandwidth 128
+ip address 203.0.113.18 255.255.255.248
+description 2-INTERNET
+no shutdown
+exit
+
+— OSPF
+router ospf 1
+router-id 2.2.2.2
+area 0 authentication message-digest
+default-information originate
+network 192.168.100.20 0.0.0.3 area 0
+network 192.168.100.36 0.0.0.3 area 0
+passive-interface Serial0/1/0
+no auto-summary
+exit
+
+–ACCESS LIST
+ip access-list standard TELNET-BLOCK
+permit host 198.51.100.5
+line vty 0 15
+access-class TELNET-BLOCK in
+
+interface serial 0/1/0
+ip access-group 101 in
+exit
+
+#######################
+###### –SITE 2
+
+hostname West
+no ip domain-lookup
+enable secret cisco
+line console 0
+logging synchronous
+password cisco
+login
+line vty 0 15
+password cisco
+login
+service password-encryption
+banner motd @Authorized acces only.@
+
+interface serial 0/0/1
+bandwidth 128
+ip address 192.168.100.38 255.255.255.252
+description 2-Central
+ip ospf message-digest-key 1 md5 xyz_OSPF
+ip ospf authentication message-digest
+no shutdown
+
+interface gi 0/1
+no shutdown
+
+interface gi 0/1.2
+encapsulation dot1q 2
+ip address 10.10.2.1 255.255.255.0
+interface gi 0/1.4
+encapsulation dot1q 4
+ip address 10.10.4.1 255.255.255.0
+interface gi 0/1.8
+encapsulation dot1q 8
+ip address 10.10.8.1 255.255.255.0
+interface gi 0/1.15
+encapsulation dot1q 15
+ip address 10.10.15.1 255.255.255.0
+interface gi 0/1.25
+encapsulation dot1q 25
+ip address 10.10.25.1 255.255.255.0
+exit
+
+— OSPF
+router ospf 1
+router-id 3.3.3.3
+passive-interface GigabitEthernet0/1
+network 192.168.100.36 0.0.0.3 area 0
+network 10.10.2.0 0.0.0.255 area 2
+network 10.10.4.0 0.0.0.255 area 2
+network 10.10.8.0 0.0.0.255 area 2
+network 10.10.15.0 0.0.0.255 area 2
+no auto-summary
+passive-interface g0/1.2
+passive-interface g0/1.4
+passive-interface g0/1.8
+passive-interface g0/1.15
+exit
+
+– ROUTE SUMMARIZATION
+interface serial 0/0/1
+ip summary-address eigrp 100 10.10.0.0 255.255.240.0
+
+– DHCP
+ip dhcp excluded-address 10.10.2.1 10.10.2.5
+ip dhcp excluded-address 10.10.4.1 10.10.4.5
+ip dhcp excluded-address 10.10.8.1 10.10.8.5
+ip dhcp pool vlan2pool
+network 10.10.2.0 255.255.255.0
+default-router 10.10.2.1
+dns-server 192.168.200.225
+ip dhcp pool vlan4pool
+network 10.10.4.0 255.255.255.0
+default-router 10.10.4.1
+dns-server 192.168.200.225
+ip dhcp pool vlan8pool
+network 10.10.8.0 255.255.255.0
+default-router 10.10.8.1
+dns-server 192.168.200.225
+exit
+
+–ACCESS LIST
+access-list 1 permit 10.10.15.0 0.0.0.255
+interface gi0/1.25
+ip access-group 1 out
+
+#######–SW-A
+
+hostname Bldg1
+no ip domain-lookup
+enable secret cisco
+line console 0
+logging synchronous
+password cisco
+login
+line vty 0 15
+password cisco
+login
+service password-encryption
+banner motd @Authorized acces only!@
+
+ip default-gateway 10.10.25.1
+vlan 2
+name sales
+vlan 4
+name prod
+vlan 8
+name acct
+vlan 15
+name admin
+vlan 25
+name SVI-NET
+vlan 99
+name null
+interface vlan 25
+ip address 10.10.25.254 255.255.255.0
+no shutdown
+
+interface fa0/5
+switchport mode acces
+switchport acces vlan 2
+
+interface fa0/10
+switchport mode acces
+switchport acces vlan 4
+
+interface fa0/15
+switchport mode acces
+switchport acces vlan 8
+
+interface fa0/24
+switchport mode acces
+switchport acces vlan 15
+
+interface range fa0/6-9,fa0/11-14,fa0/16-23
+switchport mode acces
+switchport acces vlan 99
+shutdown
+
+interface range gi1/1-2
+switchport mode acces
+switchport acces vlan 99
+shutdown
+
+– ETHERCHANNEL
+interface range fa0/1-2
+channel-group 1 mode active
+interface port-channel 1
+switchport mode trunk
+interface range fa0/3-4
 channel-group 2 mode active
+interface port-channel 2
+switchport mode trunk
 exit
-int port-channel 3 exit
-int range fa0/5-6
-channel-group 3 mode active
-exit
-int range fa0/3-6
-switchport mode trunk exit
+
+–PVST+
 spanning-tree mode rapid-pvst
-int range fa0/1-2
-switchport mode access
-switchport access vlan 999
-shutdown exit
-int range fa0/8-9
-switchport mode access
-switchport access vlan 999
-shutdown exit
-int range fa0/11-14
-switchport mode access
-switchport access vlan 999
-shutdown exit
-int range fa0/16-23
-switchport mode access
-switchport access vlan 999
-shutdown exit
-Int range g1/1-2
-switchport mode access
-switchport access vlan 999
-shutdown exit
-int fa0/7
+spanning-tree vlan 2 root primary
+spanning-tree vlan 4 root primary
+spanning-tree vlan 8 root secondary
+spanning-tree vlan 15 root secondary
+
+–SECURITY
+interface fa0/5
 switchport port-security
+switchport port-security violation restrict
 switchport port-security maximum 2
 switchport port-security mac-address sticky
-switchport port-security violation restrict
-exit
-int fa0/10
+
+interface fa0/10
 switchport port-security
+switchport port-security violation restrict
 switchport port-security maximum 2
 switchport port-security mac-address sticky
-switchport port-security violation restrict
-exit
-int fa0/15
+
+interface fa0/15
 switchport port-security
+switchport port-security violation restrict
 switchport port-security maximum 2
 switchport port-security mac-address sticky
-switchport port-security violation restrict
-exit
-int fa0/24
+
+interface fa0/24
 switchport port-security
+switchport port-security violation restrict
 switchport port-security maximum 2
 switchport port-security mac-address sticky
-switchport port-security violation restrict
-exit
+
+#######–SW-B
+
+hostname Bldg2
+no ip domain-lookup
+enable secret cisco
+line console 0
+logging synchronous
+password cisco
+login
+line vty 0 15
+password cisco
+login
+service password-encryption
+banner motd @Authorized acces only!@
+
+– SSH
+ip ssh version 2
 ip domain-name ccnaPTSA.com
 crypto key generate rsa
-1024
-ip ssh version 2
+username netadmin password SSH_secret9
 line vty 0 4
 login local
-transport input ssh exit
-username netadmin secret SSH_secret9
-—————————————————-
-SW-A>
-en conf t
-vlan 5 name sales exit
-vlan 10 name prod exit
-vlan 15 name acct exit
-vlan 100 name admin exit
-vlan 199 name manage exit
-vlan 999 name null exit
-int f0/5
-switchport mode access
-switchport access vlan 5
-no shutdown exit
-int f0/10
-switchport mode access
-switchport access vlan 10
-no shutdown exit
-int f0/15
-switchport mode access
-switchport access vlan 15
-no shutdown exit
-int f0/24
-switchport mode access
-switchport access vlan 100
-no shutdown exit
-int vlan 199
-ip address 10.10.199.254 255.255.255.0
-ip default-gateway 10.10.199.1
-int port-channel 1 exit
-int port-channel 2 exit
-int range fa0/1-2
-channel-group 1 mode active exit
-int range fa0/3-4
-channel-group 2 mode active exit
-int range fa0/1-4
-switchport mode trunk exit
-int gig1/1
-no shutdown
-switchport mode trunk exit
-spanning-tree mode rapid-pvst
-spanning-tree vlan 5 root primary
-spanning-tree vlan 10 root primary
-spanning-tree vlan 15 root secondary
-spanning-tree vlan 100 root secondary
-————————————————–
-SW-C
+transport input ssh
+line vty 5 15
+login local
+transport input ssh
 
-en conf t
-vlan 5 name sales exit
-vlan 10 name prod exit
-vlan 15 name acct exit
-vlan 100 name admin exit
-vlan 199 name manage exit
-vlan 999 name null exit
-int f0/7
-switchport mode access
-switchport access vlan 5
-no shutdown exit
-int f0/10
-switchport mode access
-switchport access vlan 10
-no shutdown exit
-int f0/15
-switchport mode access
-switchport access vlan 15
-no shutdown exit
-int f0/24
-switchport mode access
-switchport access vlan 100
-no shutdown exit
-int vlan 199
-ip address 10.10.199.252 255.255.255.0
-ip default-gateway 10.10.199.1
-int port-channel 1 exit
-int port-channel 3 exit
-int range fa0/1-2
-channel-group 1 mode active exit
-int range fa0/5-6
-channel-group 3 mode passive exit
-int range fa0/1-2
-switchport mode trunk exit
-int range fa0/5-6
-switchport mode trunk exit
+ip default-gateway 10.10.25.1
+vlan 2
+name sales
+vlan 4
+name prod
+vlan 8
+name acct
+vlan 15
+name admin
+vlan 25
+name SVI-NET
+vlan 99
+name null
+interface vlan 25
+ip address 10.10.25.253 255.255.255.0
+no shutdown
+interface gi 1/1
+switchport mode trunk
+
+– ETHERCHANNEL
+interface range fa0/3-4
+channel-group 2 mode active
+interface port-channel 2
+switchport mode trunk
+interface range fa0/5-6
+channel-group 3 mode active
+interface port-channel 3
+switchport mode trunk
+
+–PVST+
 spanning-tree mode rapid-pvst
+
+#########– SW-C
+
+hostname Bldg3
+no ip domain-lookup
+enable secret cisco
+line console 0
+logging synchronous
+password cisco
+login
+line vty 0 15
+password cisco
+login
+service password-encryption
+banner motd @Authorized acces only !@
+
+ip default-gateway 10.10.25.1
+vlan 2
+name sales
+vlan 4
+name prod
+vlan 8
+name acct
+vlan 15
+name admin
+vlan 25
+name SVI-NET
+vlan 99
+name null
+interface vlan 25
+ip address 10.10.25.252 255.255.255.0
+no shutdown
+
+interface fa0/7
+switchport mode acces
+switchport acces vlan 2
+
+interface fa0/10
+switchport mode acces
+switchport acces vlan 4
+
+interface fa0/15
+switchport mode acces
+switchport acces vlan 8
+
+interface fa0/24
+switchport mode acces
+switchport acces vlan 15
+
+– ETHERCHANNEL
+interface range fa0/1-2
+channel-group 1 mode active
+no shutdown
+interface port-channel 1
+switchport mode trunk
+
+interface range fa0/5-6
+channel-group 3 mode passive
+no shutdown
+interface port-channel 3
+switchport mode trunk
+
+–PVST+
+spanning-tree mode rapid-pvst
+spanning-tree vlan 2 root secondary
+spanning-tree vlan 4 root secondary
+spanning-tree vlan 8 root primary
 spanning-tree vlan 15 root primary
-spanning-tree vlan 100 root primary
-spanning-tree vlan 5 root secondary
-spanning-tree vlan 10 root secondary
-int fa0/7
+
+–Port Fast BPDU Guard
+interface range fa0/7, fa0/10, fa0/15, fa0/24
 spanning-tree portfast
-spanning-tree bpduguard enable exit
-int fa0/10
-spanning-tree portfast
-spanning-tree bpduguard enableexit
-int fa0/15
-spanning-tree portfast
-spanning-tree bpduguard enable exit
-int fa0/24
-spanning-tree portfast
-spanning-tree bpduguard enable exit
-"
-exit
-exit	
+spanning-tree bpduguard enable
+no shutdown"
 </textarea>
 </form>
 </body>
