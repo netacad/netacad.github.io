@@ -42,6 +42,8 @@ R1> network 198.51.100.0 0.0.0.3 area 0
 R1> passive-interface s0/0/1
 R1> default-information originate
 R1> exit
+R1> ip classless
+R1> ip route 192.168.0.10 255.255.255.255 203.0.113.1
 R1> ip route 0.0.0.0 0.0.0.0 198.51.100.2
 
 R2> hostname East (Branch-1, R2)
@@ -109,8 +111,10 @@ R4> int g0/0
 R4> ip add 10.4.0.1 255.255.255.0
 R4> no shutdown
 R4> exit
+R4> ip classless
+R4> ip route 192.168.0.9 255.255.255.255 198.51.100.1
 R4> ip route 0.0.0.0 0.0.0.0 s0/0/1
-@
+ @
 </textarea>
 
 </body>
